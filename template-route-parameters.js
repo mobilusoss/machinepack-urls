@@ -1,15 +1,3 @@
-
-
-/**
- * resolveDestinationUrl()
- *
- * @required {String} urlTemplate
- *                     e.g. '/api/v1/machines/:id/inputs/:key'
- *
- * @required {Object} routeParams
- *                     e.g. {id: 3, key: 'foo'}
- * @return {String}
- */
 module.exports = {
 
   inputs: {
@@ -26,14 +14,12 @@ module.exports = {
     }
   },
 
-  fn: function resolveDestinationUrl (inputs, xits) {
-    var result = inputs.urlTemplate.match(/\:[^\/\:\.]+/g, function (x){
-      console.log('HI',x);
+  fn: function (inputs, xits) {
+    var result = inputs.urlTemplate.replace(/(\:[^\/\:\.]+)/g, function ($all, $1){
+      var routeParamName = $1.replace(/^\:/, '');
+      return inputs.routeParams[routeParamName];
     });
     return xits(null, result);
   }
 };
-
-// Usage:
-// resolveDestinationUrl({urlTemplate: '/api/v1/machines/:id/inputs/:key', routeParams: {id:3, key: 'foo'}});
 
