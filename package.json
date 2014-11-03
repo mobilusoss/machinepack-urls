@@ -1,0 +1,29 @@
+{
+  "name": "machinepack-url-strings",
+  "version": "0.1.0",
+  "description": "Machines for working with url strings.",
+  "scripts": {
+    "test": "mocha -b"
+  },
+  "keywords": [
+    "url-strings",
+    "minify",
+    "machine",
+    "machines",
+    "machinepack"
+  ],
+  "author": "Mike McNeil",
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "~1.19.0"
+  },
+  "dependencies": {
+    "node-machine": "^0.3.0"
+  },
+  "machinepack": {
+    "machine-api": "~0.0.0",
+    "machines": [
+      "template-route-parameters"
+    ]
+  }
+}
