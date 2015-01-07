@@ -1,5 +1,5 @@
 {
-  "name": "machinepack-url-strings",
+  "name": "machinepack-urls",
   "version": "0.1.0",
   "description": "Machines for working with url strings.",
   "scripts": {
@@ -7,23 +7,20 @@
   },
   "keywords": [
     "url-strings",
-    "minify",
-    "machine",
+    "urls",
     "machines",
     "machinepack"
   ],
   "author": "Mike McNeil",
   "license": "MIT",
-  "devDependencies": {
-    "mocha": "~1.19.0"
-  },
   "dependencies": {
-    "node-machine": "^0.3.0"
+    "machine": "^1.2.3"
   },
   "machinepack": {
-    "machine-api": "~0.0.0",
+    "friendlyName": "URLs",
+    "machineDir": "machines/",
     "machines": [
-      "template-route-parameters"
+      "build-url-from-template"
     ]
   }
 }
