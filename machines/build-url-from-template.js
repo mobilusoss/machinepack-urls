@@ -3,6 +3,7 @@ module.exports = {
   friendlyName: 'Build URL from template',
   description: 'Build a URL from a template string and a set of route parameters.',
   extendedDescription: 'Template is in the standard express/backbone format.',
+  sync: true,
   inputs: {
     urlTemplate: {
       description: 'The URL template',
