@@ -20,7 +20,8 @@
     "friendlyName": "URLs",
     "machineDir": "machines/",
     "machines": [
-      "build-url-from-template"
+      "build-url-from-template",
+      "valiate-url"
     ]
   }
 }
