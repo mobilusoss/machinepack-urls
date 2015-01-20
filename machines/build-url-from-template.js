@@ -6,12 +6,14 @@ module.exports = {
   sync: true,
   inputs: {
     urlTemplate: {
-      description: 'The URL template',
-      example: '/api/v1/user/:id/friends/:friendId'
+      description: 'The URL template, consisting of zero or more colon-prefixed tokens.',
+      example: '/api/v1/user/:id/friends/:friendId',
+      required: true
     },
     data: {
       description: 'An object of key/value pairs to use as url path parameter values',
-      typeclass: 'dictionary'
+      typeclass: 'dictionary',
+      required: true
     }
   },
   defaultExit: 'success',
