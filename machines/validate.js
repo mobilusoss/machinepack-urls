@@ -1,6 +1,6 @@
 module.exports = {
   friendlyName: 'Validate URL',
-  description: 'Determine whether the specified string is a URL.',
+  description: 'Determine whether the specified string is a valid, fully-qualified URL.',
   extendedDescription: 'Validates a _fully qualified_ URL- in other words the protocol (e.g. "http") and domain (e.g. "google.com") are both required.',
   sync: true,
   inputs: {
@@ -16,7 +16,7 @@ module.exports = {
       friendlyName: 'is URL',
       description: 'The provided string is a valid, fully qualified URL.'
     },
-    no: {
+    invalid: {
       friendlyName: 'is not URL',
       description: 'The provided string is not a URL.',
       extendedDescription: 'Make sure a protocol (like http://) is specified.'
@@ -64,6 +64,6 @@ module.exports = {
     if (re_weburl.test(inputs.string)) {
       return exits.success();
     }
-    return exits.no();
+    return exits.invalid();
   }
 };

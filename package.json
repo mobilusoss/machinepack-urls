@@ -25,7 +25,12 @@
     "machineDir": "machines/",
     "machines": [
       "build-url-from-template",
-      "valiate-url"
+      "validate",
+      "sanitize"
+    ],
+    "plannedMachines": [
+      "resolve",
+      "parse"
     ]
   }
 }
