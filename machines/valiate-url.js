@@ -1,6 +1,6 @@
 module.exports = {
   friendlyName: 'Validate URL',
-  description: 'Validate that the specified string is a URL.',
+  description: 'Determine whether the specified string is a URL.',
   extendedDescription: 'Validates a _fully qualified_ URL- in other words the protocol (e.g. "http") and domain (e.g. "google.com") are both required.',
   sync: true,
   inputs: {

@@ -1,7 +1,7 @@
 {
   "name": "machinepack-urls",
   "version": "1.0.0",
-  "description": "Machines for working with url strings.",
+  "description": "Machines for working with URL strings.",
   "scripts": {
     "test": "mocha -b"
   },
@@ -15,6 +15,10 @@
   "license": "MIT",
   "dependencies": {
     "machine": "^2.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mikermcneil/machinepack-urls.git"
   },
   "machinepack": {
     "friendlyName": "URLs",
