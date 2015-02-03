@@ -45,15 +45,10 @@ module.exports = {
     })();
 
     // Now check that what we ended up with is actually valid.
-    validateUrl({
-      string: fullyQualifiedUrl
-    }).exec({
-      error: exits.error,
-      invalid: exits.invalid,
-      success: function (){
-        return exits.success(fullyQualifiedUrl);
-      }
-    });
+    // (will throw if it's not)
+    validateUrl({string: fullyQualifiedUrl}).execSync();
+
+    return exits.success(fullyQualifiedUrl);
   },
 
 };
