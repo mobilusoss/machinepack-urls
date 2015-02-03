@@ -7,7 +7,7 @@ module.exports = {
     url: {
       friendlyName: 'URL',
       example: 'www.example.com/search',
-      description: 'The URL to sanitize, with or without protocol prefix (e.g. "http://")',
+      description: 'The URL to sanitize, with or without the protocol prefix (e.g. "http://")',
       required: true
     }
   },
@@ -46,7 +46,7 @@ module.exports = {
 
     // Now check that what we ended up with is actually valid.
     validateUrl({
-      url: fullyQualifiedUrl
+      string: fullyQualifiedUrl
     }).exec({
       error: exits.error,
       invalid: exits.invalid,
