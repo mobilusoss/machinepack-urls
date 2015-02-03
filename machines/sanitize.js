@@ -1,12 +1,13 @@
 module.exports = {
-  friendlyName: 'Resolve URL',
-  description: 'Build a fully-qualified version of the provided URL (i.e. with "http://")',
-  extendedDescription: 'Given a URL or URL segment, returns the fully-qualified version including the protocol (e.g. "http://").  This is sort of like path.resolve() from Node core, but for URLs instead of filesystem paths.',
+  friendlyName: 'Sanitize URL',
+  description: 'Build a sanitized version of the provided URL (i.e. with "http://")',
+  extendedDescription: 'Given a URL or URL segment, returns the fully-qualified version including the protocol (e.g. "http://").  If a valid protocol is provided, the returned URL will be identical to what was passed in.  If the provided URL has a URL of "//", it will be replaced with "http://".',
+  sync: true,
   inputs: {
     url: {
       friendlyName: 'URL',
-      example: 'http://www.example.com',
-      description: 'The URL to resolve',
+      example: 'www.example.com/search',
+      description: 'The URL to sanitize, with or without protocol prefix (e.g. "http://")',
       required: true
     }
   },
@@ -17,7 +18,7 @@ module.exports = {
     },
     success: {
       description: 'URL resolved successfully.',
-      example: 'http://somedomain.com/search'
+      example: 'http://www.example.com/search'
     },
     invalid: {
       description: 'The provided URL is not valid.'
@@ -25,18 +26,34 @@ module.exports = {
   },
   fn: function(inputs, exits) {
 
-    // If a protocol is already included in URL, leave it alone
-    if (inputs.url.match(/^(http:\/\/|https:\/\/)/)) {
-      return exits.success(inputs.url);
-    }
-    // If protocol is invalid, but sort of makes sense ("//"), change it to `http`
-    else if (inputs.url.match(/^(\/\/)/)){
-      return exits.success('http:'+inputs.url);
-    }
-    // Otherwise default to "http://" and prefix the provided URL w/ that
-    else {
-      return exits.success('http://'+inputs.url);
-    }
+    var validateUrl = require('machine').build(require('./validate'));
+
+    // Build our best attempt at a fully-qualified URL.
+    var fullyQualifiedUrl = (function (){
+      // If a protocol is already included in URL, leave it alone
+      if (inputs.url.match(/^(https?:\/\/|ftp:\/\/)/)) {
+        return inputs.url;
+      }
+      // If protocol is invalid, but sort of makes sense ("//"), change it to `http`
+      else if (inputs.url.match(/^(\/\/)/)){
+        return inputs.url.replace(/^\/\//, 'http://');
+      }
+      // Otherwise default to "http://" and prefix the provided URL w/ that
+      else {
+        return 'http://'+inputs.url;
+      }
+    })();
+
+    // Now check that what we ended up with is actually valid.
+    validateUrl({
+      url: fullyQualifiedUrl
+    }).exec({
+      error: exits.error,
+      invalid: exits.invalid,
+      success: function (){
+        return exits.success(fullyQualifiedUrl);
+      }
+    });
   },
 
 };
