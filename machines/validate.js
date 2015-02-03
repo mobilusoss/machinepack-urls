@@ -5,6 +5,7 @@ module.exports = {
   sync: true,
   inputs: {
     string: {
+      friendlyName: 'URL (maybe)',
       example: 'http://www.example.com',
       description: 'The URL to validate',
       required: true
