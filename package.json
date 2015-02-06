@@ -22,6 +22,7 @@
   },
   "machinepack": {
     "friendlyName": "URLs",
+    "variableName": "Urls",
     "machineDir": "machines/",
     "machines": [
       "build-url-from-template",
