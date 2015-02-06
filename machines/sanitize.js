@@ -1,7 +1,7 @@
 module.exports = {
   friendlyName: 'Sanitize URL',
-  description: 'Build a sanitized version of the provided URL (i.e. with "http://")',
-  extendedDescription: 'Given a URL or URL segment, returns the fully-qualified version including the protocol (e.g. "http://").  If a valid protocol is provided, the returned URL will be identical to what was passed in.  If the provided URL has a URL of "//", it will be replaced with "http://".',
+  description: 'Build a sanitized, fully-qualified version of the provided URL.',
+  extendedDescription: 'Given a URL or URL segment, I return a fully-qualified URL with trailing slashes stripped off.  For example, if a valid protocol is provided (e.g. "https://") and the original URL contains no trailing slashes, the URL I return will be identical to what was passed in.  If the provided URL begins with "//", it will be replaced with "http://".  If the provided URL does not start with a usable protocol, "http://" will be prepended.  If the URL cannot be sanitized, I\'ll trigger the `invalid` exit.',
   sync: true,
   inputs: {
     url: {
@@ -43,6 +43,9 @@ module.exports = {
         return 'http://'+inputs.url;
       }
     })();
+    
+    // Trim off any trailing slashes
+    fullyQualifiedUrl = fullyQualifiedUrl.replace(/\/*$/, '');
 
     // Now check that what we ended up with is actually valid.
     // (will throw if it's not)
