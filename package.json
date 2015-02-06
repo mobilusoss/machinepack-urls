@@ -14,7 +14,7 @@
   "author": "Mike McNeil",
   "license": "MIT",
   "dependencies": {
-    "machine": "^2.0.2"
+    "machine": "^3.0.0"
   },
   "repository": {
     "type": "git",
