@@ -36,25 +36,21 @@ module.exports = {
       description: 'Unexpected error occurred.'
     },
 
-    invalid: {
-      description: 'URL could not be parsed'
-    },
-
     success: {
       description: 'Done.',
       example: {
-        protocol: 'http:',
-        slashes: true,
+        protocol: 'redis:',
         auth: '',
-        host: 'google.com',
         port: 80,
         hostname: 'google.com',
         hash: '',
         search: '',
-        query: {},
-        pathname: '/',
         path: '/',
-        href: 'http://google.com/'
+        // slashes: true,
+        // host: 'google.com',
+        // query: {},
+        // pathname: '/',
+        // href: 'http://google.com/'
       }
     }
 
@@ -64,20 +60,22 @@ module.exports = {
   fn: function(inputs, exits) {
 
     var Url = require('url');
-    var sanitizeUrl = require('machine').build(require('./sanitize'));
+    // var sanitizeUrl = require('machine').build(require('./sanitize'));
 
-    var sanitizedUrl;
-    try {
-      sanitizedUrl = sanitizeUrl({url: inputs.url}).execSync();
-    }
-    catch (e) {
-      if (e.exit === 'invalid') return exits.invalid();
-      return exits.error(e);
-    }
+    // var sanitizedUrl;
+    // try {
+    //   sanitizedUrl = sanitizeUrl({url: inputs.url}).execSync();
+    // }
+    // catch (e) {
+    //   if (e.exit === 'invalid') return exits.invalid();
+    //   return exits.error(e);
+    // }
 
-    var parsedUrl = Url.parse(sanitizedUrl);
+    var parsedUrl = Url.parse(inputs.url);
+
+    // Attempt to infer port if it doesn't exist
     if (!parsedUrl.port) {
-      if (sanitizedUrl.match(/https/)) {
+      if (parsedUrl.protocol === 'https:') {
         parsedUrl.port = 443;
       }
       else {
