@@ -14,7 +14,7 @@
   "author": "Mike McNeil",
   "license": "MIT",
   "dependencies": {
-    "machine": "^3.0.0"
+    "machine": "^4.0.0"
   },
   "repository": {
     "type": "git",
@@ -27,7 +27,8 @@
     "machines": [
       "build-url-from-template",
       "validate",
-      "sanitize"
+      "sanitize",
+      "parse"
     ],
     "plannedMachines": [
       "resolve",

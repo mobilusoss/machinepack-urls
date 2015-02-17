@@ -43,13 +43,21 @@ module.exports = {
         return 'http://'+inputs.url;
       }
     })();
-    
+
     // Trim off any trailing slashes
     fullyQualifiedUrl = fullyQualifiedUrl.replace(/\/*$/, '');
 
     // Now check that what we ended up with is actually valid.
     // (will throw if it's not)
-    validateUrl({string: fullyQualifiedUrl}).execSync();
+    try {
+      validateUrl({string: fullyQualifiedUrl}).execSync();
+    }
+    catch (e) {
+      if (e.exit === 'invalid') {
+        return exits.invalid(e);
+      }
+      return exits.error(e);
+    }
 
     return exits.success(fullyQualifiedUrl);
   },
