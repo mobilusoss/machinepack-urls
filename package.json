@@ -1,6 +1,6 @@
 {
   "name": "machinepack-urls",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Machines for working with URL strings.",
   "scripts": {
     "test": "node ./node_modules/test-machinepack-mocha/bin/testmachinepack-mocha.js"
