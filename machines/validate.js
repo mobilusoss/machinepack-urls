@@ -53,8 +53,8 @@ module.exports = {
       "(?:(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)" +
       // domain name
       "(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)*" +
-      // TLD identifier
-      "(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))" +
+      // TLD identifier (optional, to allow http://localhost)
+      "(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))?" +
       ")" +
       // port number
       "(?::\\d{2,5})?" +
