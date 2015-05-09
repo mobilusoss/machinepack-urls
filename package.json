@@ -25,10 +25,10 @@
     "variableName": "Urls",
     "machineDir": "machines/",
     "machines": [
-      "build-url-from-template",
       "validate",
-      "sanitize",
-      "parse"
+      "parse",
+      "format",
+      "resolve"
     ],
     "plannedMachines": [
       "resolve",
