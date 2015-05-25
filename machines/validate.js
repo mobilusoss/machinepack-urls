@@ -3,6 +3,7 @@ module.exports = {
   description: 'Determine whether the specified string is a valid, fully-qualified URL.',
   extendedDescription: 'Validates a _fully qualified_ URL- in other words the protocol (e.g. "http") and domain (e.g. "google.com") are both required.',
   sync: true,
+  cacheable: true,
   inputs: {
     string: {
       friendlyName: 'URL (maybe)',
@@ -11,7 +12,6 @@ module.exports = {
       required: true
     }
   },
-  defaultExit: 'success',
   exits: {
     success: {
       friendlyName: 'is URL',

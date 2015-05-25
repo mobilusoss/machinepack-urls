@@ -3,6 +3,7 @@ module.exports = {
   description: 'Build a sanitized, fully-qualified version of the provided URL.',
   extendedDescription: 'Given a URL or URL segment, I return a fully-qualified URL with trailing slashes stripped off.  For example, if a valid protocol is provided (e.g. "https://") and the original URL contains no trailing slashes, the URL I return will be identical to what was passed in.  If the provided URL begins with "//", it will be replaced with "http://".  If the provided URL does not start with a usable protocol, "http://" will be prepended.  If the URL cannot be sanitized, I\'ll trigger the `invalid` exit.',
   sync: true,
+  cacheable: true,
   inputs: {
     url: {
       friendlyName: 'URL',
@@ -11,7 +12,6 @@ module.exports = {
       required: true
     }
   },
-  defaultExit: 'success',
   exits: {
     error: {
       description: 'Unexpected error occurred.'
