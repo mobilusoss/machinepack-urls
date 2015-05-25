@@ -14,7 +14,8 @@
   "author": "Mike McNeil",
   "license": "MIT",
   "dependencies": {
-    "machine": "^4.0.0"
+    "lodash": "^3.9.2",
+    "machine": "^9.0.3"
   },
   "repository": {
     "type": "git",
@@ -37,6 +38,6 @@
     "testsUrl": "https://travis-ci.org/mikermcneil/machinepack-urls"
   },
   "devDependencies": {
-    "test-machinepack-mocha": "^0.2.2"
+    "test-machinepack-mocha": "^1.0.0"
   }
 }
