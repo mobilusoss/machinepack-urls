@@ -1,0 +1,25 @@
+{
+  "machine": "resolve",
+  "expectations": [
+    {
+      "using": {
+        "url": "google.com"
+      },
+      "outcome": "success",
+      "returns": "http://google.com"
+    },
+    {
+      "using": {
+        "url": "/baz"
+      },
+      "outcome": "invalid"
+    },
+    {
+      "using": {
+        "url": "https://google.com/baby-bunnies/cam"
+      },
+      "outcome": "success",
+      "returns": "https://google.com/baby-bunnies/cam"
+    }
+  ]
+}
