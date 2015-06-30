@@ -1,10 +1,20 @@
 module.exports = {
 
   friendlyName: 'Format URL',
+
+
   description: 'Build a URL from a template string and a set of route parameters.',
+
+
   extendedDescription: 'Template is in the standard express/backbone format.',
+
+
   sync: true,
+
+
   cacheable: true,
+
+
   inputs: {
     urlTemplate: {
       description: 'The URL template, consisting of zero or more colon-prefixed tokens.',
@@ -17,7 +27,8 @@ module.exports = {
       required: true
     }
   },
-  defaultExit: 'success',
+
+
   exits: {
     error: {
       description: 'Unexpected error occurred.'

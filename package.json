@@ -31,10 +31,6 @@
       "format",
       "resolve"
     ],
-    "plannedMachines": [
-      "resolve",
-      "parse"
-    ],
     "testsUrl": "https://travis-ci.org/mikermcneil/machinepack-urls"
   },
   "devDependencies": {
