@@ -10,13 +10,13 @@ module.exports = {
   sync: true,
 
 
-  cacheable: true,
+  sideEffects: 'cacheable',
 
 
   inputs: {
 
     url: {
-      description: 'The URL to parse',
+      description: 'The URL to parse.',
       example: 'http://www.example.com/search',
       required: true
     }
@@ -26,13 +26,10 @@ module.exports = {
 
   exits: {
 
-    error: {
-      description: 'Unexpected error occurred.'
-    },
-
     success: {
-      description: 'Done.',
-      example: {
+      outputFriendlyName: 'Parsed URL',
+      outputDescription: 'Information obtained by parsing the input URL.',
+      outputExample: {
         protocol: 'redis:',
         auth: '',
         port: 80,

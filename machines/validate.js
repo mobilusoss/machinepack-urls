@@ -3,28 +3,24 @@ module.exports = {
   description: 'Determine whether the specified string is a valid, fully-qualified URL.',
   extendedDescription: 'Validates a _fully qualified_ URL- in other words the protocol (e.g. "http") and domain (e.g. "google.com") are both required.',
   sync: true,
-  cacheable: true,
+  sideEffects: 'cacheable',
   inputs: {
     string: {
-      friendlyName: 'URL (maybe)',
       example: 'http://www.example.com',
-      description: 'The URL to validate',
+      description: 'The candidate URL to validate.',
       required: true
     }
   },
   exits: {
     success: {
-      friendlyName: 'is URL',
-      description: 'The provided string is a valid, fully qualified URL.'
+      friendlyName: 'Valid URL',
+      description: 'The provided string was a valid, fully qualified URL.'
     },
     invalid: {
-      friendlyName: 'is not URL',
-      description: 'The provided string is not a URL.',
+      friendlyName: 'Invalid URL',
+      description: 'The provided string was not a valid URL.',
       extendedDescription: 'Make sure a protocol (like http://) is specified.'
-    },
-    error: {
-      description: 'Unexpected error occurred.'
-    },
+    }
   },
   fn: function(inputs, exits) {
     // From https://gist.github.com/dperini/729294

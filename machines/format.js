@@ -12,17 +12,18 @@ module.exports = {
   sync: true,
 
 
-  cacheable: true,
+  sideEffects: 'cacheable',
 
 
   inputs: {
     urlTemplate: {
+      friendlyName: 'URL template',
       description: 'The URL template, consisting of zero or more colon-prefixed tokens.',
       example: '/api/v1/user/:id/friends/:friendId',
       required: true
     },
     data: {
-      description: 'An object of key/value pairs to use as url path parameter values',
+      description: 'An object of key/value pairs to use as url path parameter values.',
       example: {},
       required: true
     }
@@ -30,11 +31,10 @@ module.exports = {
 
 
   exits: {
-    error: {
-      description: 'Unexpected error occurred.'
-    },
     success: {
-      example: '/api/v1/user/7/friends/aba213-a83192bf-d139-e139e'
+      outputFriendlyName: 'Formatted URL',
+      outputDescription: 'The result of applying the given route parameters to the input template.',
+      outputExample: '/api/v1/user/7/friends/aba213-a83192bf-d139-e139e'
     }
   },
 
