@@ -1,6 +1,6 @@
 {
   "name": "machinepack-urls",
-  "version": "3.1.1",
+  "version": "5.0.0",
   "description": "Machines for working with URL strings.",
   "scripts": {
     "test": "node ./node_modules/test-machinepack-mocha/bin/testmachinepack-mocha.js"
@@ -14,7 +14,8 @@
   "author": "Mike McNeil",
   "license": "MIT",
   "dependencies": {
-    "machine": "^4.0.0"
+    "lodash": "^3.9.2",
+    "machine": "^10.3.1"
   },
   "repository": {
     "type": "git",
@@ -25,18 +26,14 @@
     "variableName": "Urls",
     "machineDir": "machines/",
     "machines": [
-      "build-url-from-template",
       "validate",
-      "sanitize",
-      "parse"
-    ],
-    "plannedMachines": [
-      "resolve",
-      "parse"
+      "parse",
+      "format",
+      "resolve"
     ],
     "testsUrl": "https://travis-ci.org/mikermcneil/machinepack-urls"
   },
   "devDependencies": {
-    "test-machinepack-mocha": "^0.2.2"
+    "test-machinepack-mocha": "^2.1.1"
   }
 }

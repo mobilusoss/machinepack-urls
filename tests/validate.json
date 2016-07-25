@@ -2,8 +2,33 @@
   "machine": "validate",
   "expectations": [
     {
-      "todo": true,
-      "using": {},
+      "using": {
+        "string": "http://i think this is a URL right?"
+      },
+      "outcome": "invalid"
+    },
+    {
+      "using": {
+        "string": "crap what about this one?q=123"
+      },
+      "outcome": "invalid"
+    },
+    {
+      "using": {
+        "string": "/ugh/whatever"
+      },
+      "outcome": "invalid"
+    },
+    {
+      "using": {
+        "string": "http://google.com"
+      },
+      "outcome": "success"
+    },
+    {
+      "using": {
+        "string": "http://google.com/foo/bar?baz=123#hi"
+      },
       "outcome": "success"
     }
   ]

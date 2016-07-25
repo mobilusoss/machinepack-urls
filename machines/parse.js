@@ -13,9 +13,6 @@ module.exports = {
   cacheable: true,
 
 
-  extendedDescription: '',
-
-
   inputs: {
 
     url: {
@@ -25,9 +22,6 @@ module.exports = {
     }
 
   },
-
-
-  defaultExit: 'success',
 
 
   exits: {

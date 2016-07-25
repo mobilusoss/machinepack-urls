@@ -1,9 +1,20 @@
 module.exports = {
 
-  friendlyName: 'Build URL from template',
+  friendlyName: 'Format URL',
+
+
   description: 'Build a URL from a template string and a set of route parameters.',
+
+
   extendedDescription: 'Template is in the standard express/backbone format.',
+
+
   sync: true,
+
+
+  cacheable: true,
+
+
   inputs: {
     urlTemplate: {
       description: 'The URL template, consisting of zero or more colon-prefixed tokens.',
@@ -12,11 +23,12 @@ module.exports = {
     },
     data: {
       description: 'An object of key/value pairs to use as url path parameter values',
-      typeclass: 'dictionary',
+      example: {},
       required: true
     }
   },
-  defaultExit: 'success',
+
+
   exits: {
     error: {
       description: 'Unexpected error occurred.'
@@ -27,8 +39,13 @@ module.exports = {
   },
 
   fn: function (inputs, exits) {
+    var _ = require('lodash');
+
     var result = inputs.urlTemplate.replace(/(\:[^\/\:\.]+)/g, function ($all, $1){
       var routeParamName = $1.replace(/^\:/, '');
+      if (_.isUndefined(inputs.data[routeParamName]) || _.isNull(inputs.data[routeParamName])) {
+        return '';
+      }
       return inputs.data[routeParamName];
     });
     return exits.success(result);
