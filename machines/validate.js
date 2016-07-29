@@ -58,9 +58,14 @@ module.exports = {
       "(?:/\\S*)?" +
       "$", "i"
     );
+
+    // If the input string can pass through the regex above, it's a valid URL,
+    // so we can return through our `success` exit.
     if (re_weburl.test(inputs.string)) {
       return exits.success();
     }
+
+    // Otherwise return through the `invalid` exit.
     return exits.invalid();
   }
 };

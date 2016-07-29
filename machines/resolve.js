@@ -28,39 +28,43 @@ module.exports = {
   },
   fn: function(inputs, exits) {
 
-    var validateUrl = require('machine').build(require('./validate'));
+    // Get a handle to this pack.
+    var Urls = require('../');
 
     // Build our best attempt at a fully-qualified URL.
     var fullyQualifiedUrl = (function (){
-      // If a protocol is already included in URL, leave it alone
+      // If a protocol is already included in URL, leave it alone.
       if (inputs.url.match(/^(https?:\/\/|ftp:\/\/)/)) {
         return inputs.url;
       }
-      // If protocol is invalid, but sort of makes sense ("//"), change it to `http`
+      // If protocol is invalid, but sort of makes sense ("//"), change it to `http`.
       else if (inputs.url.match(/^(\/\/)/)){
         return inputs.url.replace(/^\/\//, 'http://');
       }
-      // Otherwise default to "http://" and prefix the provided URL w/ that
+      // Otherwise default to "http://" and prefix the provided URL w/ that.
       else {
         return 'http://'+inputs.url;
       }
     })();
 
-    // Trim off any trailing slashes
+    // Trim off any trailing slashes.
     fullyQualifiedUrl = fullyQualifiedUrl.replace(/\/*$/, '');
 
     // Now check that what we ended up with is actually valid.
-    // (will throw if it's not)
     try {
-      validateUrl({string: fullyQualifiedUrl}).execSync();
+      Urls.validate({string: fullyQualifiedUrl}).execSync();
     }
     catch (e) {
+      // If the validator returned through its `invalid` exit, we will do the same.
       if (e.exit === 'invalid') {
         return exits.invalid(e);
       }
+      // Otherwise the validator threw an unknown error, so we'll return through
+      // our `error` exit.
       return exits.error(e);
     }
 
+    // Return the fully-qualified URL through the `success` exit.
     return exits.success(fullyQualifiedUrl);
   },
 
