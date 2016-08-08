@@ -16,17 +16,20 @@ module.exports = {
 
 
   inputs: {
+
     urlTemplate: {
       friendlyName: 'URL template',
       description: 'The URL template, consisting of zero or more colon-prefixed tokens.',
       example: '/api/v1/user/:id/friends/:friendId',
       required: true
     },
+
     data: {
       description: 'An object of key/value pairs to use as url path parameter values.',
       example: {},
       required: true
     }
+
   },
 
 
