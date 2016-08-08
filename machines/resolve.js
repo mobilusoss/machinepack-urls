@@ -21,9 +21,6 @@ module.exports = {
       outputFriendlyName: 'Resolved URL',
       outputDescription: 'A sanitized, fully-qualified version of the input URL.',
       outputExample: 'http://www.example.com/search'
-    },
-    invalid: {
-      description: 'The provided URL was not valid.'
     }
   },
   fn: function(inputs, exits) {
@@ -52,7 +49,7 @@ module.exports = {
 
     // Now check that what we ended up with is actually valid.
     if (!Urls.validate({string: fullyQualifiedUrl}).execSync()) {
-      return exits.invalid();
+      return exits.error(new Error('The provided URL was not valid.'));
     }
 
     // Return the fully-qualified URL through the `success` exit.

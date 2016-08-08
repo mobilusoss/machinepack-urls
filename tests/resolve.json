@@ -12,7 +12,7 @@
       "using": {
         "url": "/baz"
       },
-      "outcome": "invalid"
+      "outcome": "error"
     },
     {
       "using": {
