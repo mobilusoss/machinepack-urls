@@ -1,5 +1,5 @@
 module.exports = {
-  friendlyName: 'Validate URL',
+  friendlyName: 'Is valid URL?',
   description: 'Determine whether the specified string is a valid, fully-qualified URL.',
   extendedDescription: 'Validates a _fully qualified_ URL- in other words the protocol (e.g. "http") and domain (e.g. "google.com") are both required.',
   sync: true,
@@ -13,13 +13,9 @@ module.exports = {
   },
   exits: {
     success: {
-      friendlyName: 'Valid URL',
-      description: 'The provided string was a valid, fully qualified URL.'
-    },
-    invalid: {
-      friendlyName: 'Invalid URL',
-      description: 'The provided string was not a valid URL.',
-      extendedDescription: 'Make sure a protocol (like http://) is specified.'
+      outputFriendlyName: 'Valid URL?',
+      outputDescription: 'Whether the provided string was a valid, fully qualified URL.',
+      outputExample: true
     }
   },
   fn: function(inputs, exits) {
@@ -60,12 +56,12 @@ module.exports = {
     );
 
     // If the input string can pass through the regex above, it's a valid URL,
-    // so we can return through our `success` exit.
+    // so we can return `true` through our `success` exit.
     if (re_weburl.test(inputs.string)) {
-      return exits.success();
+      return exits.success(true);
     }
 
-    // Otherwise return through the `invalid` exit.
-    return exits.invalid();
+    // Otherwise return `false` through the `invalid` exit.
+    return exits.success(false);
   }
 };
