@@ -51,17 +51,8 @@ module.exports = {
     fullyQualifiedUrl = fullyQualifiedUrl.replace(/\/*$/, '');
 
     // Now check that what we ended up with is actually valid.
-    try {
-      Urls.validate({string: fullyQualifiedUrl}).execSync();
-    }
-    catch (e) {
-      // If the validator returned through its `invalid` exit, we will do the same.
-      if (e.exit === 'invalid') {
-        return exits.invalid(e);
-      }
-      // Otherwise the validator threw an unknown error, so we'll return through
-      // our `error` exit.
-      return exits.error(e);
+    if (!Urls.validate({string: fullyQualifiedUrl}).execSync()) {
+      return exits.invalid();
     }
 
     // Return the fully-qualified URL through the `success` exit.
