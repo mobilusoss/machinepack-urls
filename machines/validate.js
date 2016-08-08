@@ -1,23 +1,43 @@
 module.exports = {
+
+
   friendlyName: 'Is valid URL?',
+
+
   description: 'Determine whether the specified string is a valid, fully-qualified URL.',
+
+
   extendedDescription: 'Validates a _fully qualified_ URL- in other words the protocol (e.g. "http") and domain (e.g. "google.com") are both required.',
+
+
   sync: true,
+
+
   sideEffects: 'cacheable',
+
+
   inputs: {
+
     string: {
       example: 'http://www.example.com',
       description: 'The candidate URL to validate.',
       required: true
     }
+
   },
+
+
   exits: {
+
     success: {
       outputFriendlyName: 'Valid URL?',
       outputDescription: 'Whether the provided string was a valid, fully qualified URL.',
       outputExample: true
     }
+
   },
+
+
   fn: function(inputs, exits) {
     // From https://gist.github.com/dperini/729294
     var re_weburl = new RegExp(
