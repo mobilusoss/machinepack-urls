@@ -5,31 +5,36 @@
       "using": {
         "string": "http://i think this is a URL right?"
       },
-      "outcome": "invalid"
+      "outcome": "success",
+      "returns": false
     },
     {
       "using": {
         "string": "crap what about this one?q=123"
       },
-      "outcome": "invalid"
+      "outcome": "success",
+      "returns": false
     },
     {
       "using": {
         "string": "/ugh/whatever"
       },
-      "outcome": "invalid"
+      "outcome": "success",
+      "returns": false
     },
     {
       "using": {
         "string": "http://google.com"
       },
-      "outcome": "success"
+      "outcome": "success",
+      "returns": true
     },
     {
       "using": {
         "string": "http://google.com/foo/bar?baz=123#hi"
       },
-      "outcome": "success"
+      "outcome": "success",
+      "returns": true
     }
   ]
 }
