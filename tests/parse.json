@@ -13,7 +13,8 @@
         "hostname": "google.com",
         "hash": "",
         "search": "",
-        "path": "/"
+        "path": "/",
+        "pathname": "/"
       }
     },
     {
@@ -28,7 +29,8 @@
         "hostname": "",
         "hash": "",
         "search": "",
-        "path": "google.com"
+        "path": "google.com",
+        "pathname": "google.com"
       }
     },
     {
@@ -43,7 +45,8 @@
         "hostname": "",
         "hash": "#blast",
         "search": "?bing=bat",
-        "path": "google.com/foobar/baz?bing=bat"
+        "path": "google.com/foobar/baz?bing=bat",
+        "pathname": "google.com/foobar/baz"
       }
     },
     {
@@ -58,7 +61,8 @@
         "hostname": "",
         "hash": "#blast",
         "search": "?bing=bat",
-        "path": "/foobar/baz?bing=bat"
+        "path": "/foobar/baz?bing=bat",
+        "pathname": "/foobar/baz"
       }
     }
   ]
