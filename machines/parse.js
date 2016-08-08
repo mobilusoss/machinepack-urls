@@ -17,7 +17,7 @@ module.exports = {
 
     url: {
       description: 'The URL to parse.',
-      example: 'http://www.example.com/search',
+      example: 'http://user:pass@host.com:8080/p/a/t/h?query=string#hash',
       required: true
     }
 
@@ -30,13 +30,14 @@ module.exports = {
       outputFriendlyName: 'Parsed URL',
       outputDescription: 'Information obtained by parsing the input URL.',
       outputExample: {
-        protocol: 'redis:',
-        auth: '',
-        port: 80,
-        hostname: 'google.com',
-        hash: '',
-        search: '',
-        path: '/',
+        protocol: 'http:',
+        auth: 'user:pass',
+        port: 8080,
+        hostname: 'host.com',
+        hash: 'hash',
+        search: '?query=string',
+        pathname: '/p/a/t/h',
+        path: '/p/a/t/h?query=string'
       }
     }
 
