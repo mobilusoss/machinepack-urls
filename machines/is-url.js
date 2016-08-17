@@ -1,7 +1,7 @@
 module.exports = {
 
 
-  friendlyName: 'Is valid URL?',
+  friendlyName: 'Is URL?',
 
 
   description: 'Determine whether the specified string is a valid, fully-qualified URL.',

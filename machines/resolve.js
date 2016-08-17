@@ -64,7 +64,7 @@ module.exports = {
     fullyQualifiedUrl = fullyQualifiedUrl.replace(/\/*$/, '');
 
     // Now check that what we ended up with is actually valid.
-    if (!Urls.validate({string: fullyQualifiedUrl}).execSync()) {
+    if (!Urls.isUrl({string: fullyQualifiedUrl}).execSync()) {
       return exits.error(new Error('The provided URL was not valid.'));
     }
 

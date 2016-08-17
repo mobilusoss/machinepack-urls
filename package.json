@@ -26,7 +26,7 @@
     "variableName": "Urls",
     "machineDir": "machines/",
     "machines": [
-      "validate",
+      "is-url",
       "parse",
       "format",
       "resolve"

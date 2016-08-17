@@ -1,5 +1,5 @@
 {
-  "machine": "validate",
+  "machine": "is-url",
   "expectations": [
     {
       "using": {
