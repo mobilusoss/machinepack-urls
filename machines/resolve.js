@@ -63,54 +63,110 @@ module.exports = {
 
   fn: function(inputs, exits) {
 
+    // Import the `url` module from Node core.
+    var url = require('url');
+
     // Get a handle to this pack.
     var Urls = require('../');
 
 
-    //  ╦╔═╗  ┌┐ ┌─┐┌─┐┌─┐  ┬ ┬┬─┐┬    ┬ ┬┌─┐┌─┐  ┌─┐┬─┐┌─┐┬  ┬┬┌┬┐┌─┐┌┬┐
-    //  ║╠╣   ├┴┐├─┤└─┐├┤   │ │├┬┘│    │││├─┤└─┐  ├─┘├┬┘│ │└┐┌┘│ ││├┤  ││
-    //  ╩╚    └─┘┴ ┴└─┘└─┘  └─┘┴└─┴─┘  └┴┘┴ ┴└─┘  ┴  ┴└─└─┘ └┘ ┴─┴┘└─┘─┴┘ooo
-    if (inputs.baseUrl !== undefined) {
-      // TODO
-      throw new Error('TODO');
-    }
+    // Resolve either the `url` or the `baseUrl` (if one was provided.)
+    //
+    // > If a `baseUrl` WAS provided, once it is resolved (and valid),
+    // > treat the primary `url` as a path, and resolve it relative to
+    // > the base URL.
+    var fullyQualifiedUrl = (function _resolveEitherUrlOrBaseUrl(opts){
 
+      //  ╦╔═╗  ┌┐ ┌─┐┌─┐┌─┐  ┬ ┬┬─┐┬    ┬ ┬┌─┐┌─┐  ┌─┐┬─┐┌─┐┬  ┬┬┌┬┐┌─┐┌┬┐
+      //  ║╠╣   ├┴┐├─┤└─┐├┤   │ │├┬┘│    │││├─┤└─┐  ├─┘├┬┘│ │└┐┌┘│ ││├┤  ││
+      //  ╩╚    └─┘┴ ┴└─┘└─┘  └─┘┴└─┴─┘  └┴┘┴ ┴└─┘  ┴  ┴└─└─┘ └┘ ┴─┴┘└─┘─┴┘ooo
+      if (inputs.baseUrl !== undefined) {
+        var resolvedBaseUrl = opts.handleResolvingUrl(inputs.baseUrl);
+        if (resolvedBaseUrl === '') {
+          throw new Error('The provided base URL (`'+inputs.baseUrl+'`) was not a valid, fully-qualified URL.  Make sure it includes the hostname (e.g. "example.com").');
+        }
+        // --• If we're here, then we have a safe, fully-qualified version of the `baseUrl`.
+
+        // Now we'll assume that the provided `url` is a valid URL path.
+        // But verify that first, just to be safe.
+        //
+        // > Note that we're not particularly draconian here.  That's because we're using Node's built-in
+        // > `url` module below, and it's pretty tolerant (it trims whitespace and adds leading slashes,
+        // > URL encodes, etc.)  So our goal is just to catch some of the major stuff that would normally
+        // > slip through the cracks and cause `url.resolve()` to fail silently in an unexpected way.
+        if (inputs.url.match(/^(https?:\/\/|ftp:\/\/)/)) {
+          throw new Error('The provided primary URL (`'+inputs.url+'`) has an unexpected format.  Because a base URL (`'+inputs.baseUrl+'`) was also specified, the primary URL should be provided as a URL path, like "/foo/bar".');
+        }
+
+        // Now resolve the `url` relative to the the `baseUrl` using Node's `url.resolve()`.
+        var finalResolvedUrl = url.resolve(resolvedBaseUrl, inputs.url);
+
+        // Now, one last time, trim off any trailing slashes.
+        finalResolvedUrl = finalResolvedUrl.replace(/\/*$/, '');
+
+        // And that's it!
+        return resolvedBaseUrl;
+      }// ‡
+      //  ╔═╗╔╦╗╦ ╦╔═╗╦═╗╦ ╦╦╔═╗╔═╗
+      //  ║ ║ ║ ╠═╣║╣ ╠╦╝║║║║╚═╗║╣
+      //  ╚═╝ ╩ ╩ ╩╚═╝╩╚═╚╩╝╩╚═╝╚═╝ooo
+      //  ┌─    ┌┐┌┌─┐  ┌┐ ┌─┐┌─┐┌─┐  ┬ ┬┬─┐┬    ┬ ┬┌─┐┌─┐  ┌─┐┬─┐┌─┐┬  ┬┬┌┬┐┌─┐┌┬┐    ─┐
+      //  │───  ││││ │  ├┴┐├─┤└─┐├┤   │ │├┬┘│    │││├─┤└─┐  ├─┘├┬┘│ │└┐┌┘│ ││├┤  ││  ───│
+      //  └─    ┘└┘└─┘  └─┘┴ ┴└─┘└─┘  └─┘┴└─┴─┘  └┴┘┴ ┴└─┘  ┴  ┴└─└─┘ └┘ ┴─┴┘└─┘─┴┘    ─┘
+      else {
+        var resolvedPrimaryUrl = opts.handleResolvingUrl(inputs.url);
+        if (resolvedPrimaryUrl === '') {
+          throw new Error('The provided URL (`'+inputs.url+'`) was not a valid, fully-qualified URL.  Make sure it includes the hostname (e.g. "example.com"), or leave this primary URL as a path like "/foo/bar" and include a base URL (e.g. "api.example.com/pets").');
+        }
+        return resolvedPrimaryUrl;
+      }
+
+    })({
+
+      /**
+       * handleResolvingUrl()
+       *
+       * @param  {String} origUrl
+       *
+       * @returns {String}
+       *         The fully-qualified version of the provided `origUrl`.
+       *         (Or empty string, if it fails.)
+       */
+      handleResolvingUrl: function (origUrl){
+
+        // Build our best attempt at a fully-qualified URL.
+        var fullyQualifiedUrl = (function (){
+          // If a protocol is already included in URL, leave it alone.
+          if (origUrl.match(/^(https?:\/\/|ftp:\/\/)/)) {
+            return origUrl;
+          }
+          // If protocol is invalid, but sort of makes sense ("//"), change it to `http`.
+          else if (origUrl.match(/^(\/\/)/)){
+            return origUrl.replace(/^\/\//, 'http://');
+          }
+          // Otherwise default to "http://" and prefix the provided URL w/ that.
+          else {
+            return 'http://'+origUrl;
+          }
+        })();
+
+        // Trim off any trailing slashes.
+        fullyQualifiedUrl = fullyQualifiedUrl.replace(/\/*$/, '');
+
+        // Now check that what we ended up with is actually valid.
+        if (!Urls.isUrl({string: fullyQualifiedUrl}).execSync()) {
+          return '';
+        }
+
+        return fullyQualifiedUrl;
+      }//</lamda definition :: handleResolvingUrl>
+    });//</self-calling function>
 
     // --•
-    //  ╔═╗╔╦╗╦ ╦╔═╗╦═╗╦ ╦╦╔═╗╔═╗
-    //  ║ ║ ║ ╠═╣║╣ ╠╦╝║║║║╚═╗║╣
-    //  ╚═╝ ╩ ╩ ╩╚═╝╩╚═╚╩╝╩╚═╝╚═╝ooo
-    //  ┌─    ┌┐┌┌─┐  ┌┐ ┌─┐┌─┐┌─┐  ┬ ┬┬─┐┬    ┬ ┬┌─┐┌─┐  ┌─┐┬─┐┌─┐┬  ┬┬┌┬┐┌─┐┌┬┐    ─┐
-    //  │───  ││││ │  ├┴┐├─┤└─┐├┤   │ │├┬┘│    │││├─┤└─┐  ├─┘├┬┘│ │└┐┌┘│ ││├┤  ││  ───│
-    //  └─    ┘└┘└─┘  └─┘┴ ┴└─┘└─┘  └─┘┴└─┴─┘  └┴┘┴ ┴└─┘  ┴  ┴└─└─┘ └┘ ┴─┴┘└─┘─┴┘    ─┘
-    // Otherwise, no `baseUrl` was provided.
-
-    // Build our best attempt at a fully-qualified URL.
-    var fullyQualifiedUrl = (function (){
-      // If a protocol is already included in URL, leave it alone.
-      if (inputs.url.match(/^(https?:\/\/|ftp:\/\/)/)) {
-        return inputs.url;
-      }
-      // If protocol is invalid, but sort of makes sense ("//"), change it to `http`.
-      else if (inputs.url.match(/^(\/\/)/)){
-        return inputs.url.replace(/^\/\//, 'http://');
-      }
-      // Otherwise default to "http://" and prefix the provided URL w/ that.
-      else {
-        return 'http://'+inputs.url;
-      }
-    })();
-
-    // Trim off any trailing slashes.
-    fullyQualifiedUrl = fullyQualifiedUrl.replace(/\/*$/, '');
-
-    // Now check that what we ended up with is actually valid.
-    if (!Urls.isUrl({string: fullyQualifiedUrl}).execSync()) {
-      return exits.error(new Error('The provided URL (`'+inputs.url+'`) was not a valid, fully-qualified URL.  Make sure it includes the hostname (e.g. "example.com").'));
-    }
-
-    // Return the fully-qualified URL through the `success` exit.
+    // Now, if we made it here, return the fully-qualified URL through
+    // the `success` exit.
     return exits.success(fullyQualifiedUrl);
   }
+
 
 };
