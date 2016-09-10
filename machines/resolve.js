@@ -104,10 +104,14 @@ module.exports = {
 
         // Now resolve the `url` relative to the the `baseUrl` using Node's `url.resolve()`.
         // (This also escapes characters like spaces, etc.)
-        var finalResolvedUrl = url.resolve(resolvedBaseUrl, inputs.url);
+        //
+        // > But before doing so, note that we remove any leading slashes
+        // > (this is because `url.resolve()` acts like href resolution in the browser- and we don't want that.)
+        var primaryUrlWithoutLeadingSlashes = inputs.url.replace(/^\/+/,'');
+        var finalResolvedUrl = url.resolve(resolvedBaseUrl, primaryUrlWithoutLeadingSlashes);
 
         // Now, one last time, trim off any trailing slashes.
-        finalResolvedUrl = fullyQualifiedUrl.replace(/\/*$/, '');
+        finalResolvedUrl = finalResolvedUrl.replace(/\/*$/, '');
 
         // And that's it!
         return finalResolvedUrl;
@@ -161,6 +165,16 @@ module.exports = {
 
         // Trim off any trailing slashes.
         fullyQualifiedUrl = fullyQualifiedUrl.replace(/\/*$/, '');
+
+        // Squish together any repeated adjacent slashes that appear after the protocol
+        // (e.g. "http://foo///bar//z/////d.jpg" => "http://foo/bar/z/d.jpg")
+        var pieces = fullyQualifiedUrl.split(/^([a-z][a-z0-9]+:\/\/)/);
+        console.log(fullyQualifiedUrl, pieces);
+        if (pieces.length < 3) { throw new Error('Consistency violation: Internal error in mp-urls (should always be able to split fully qualified URL on its protocol!  But could not properly split: `'+fullyQualifiedUrl+'`)'); }
+        var justTheProtocol = pieces[1];
+        var everythingButProtocol = pieces.slice(2).join('');
+        fullyQualifiedUrl = justTheProtocol + everythingButProtocol.replace(/\/+/g, '/');
+        console.log('after:',fullyQualifiedUrl);
 
         // Now use Node's `url.resolve()` to escape characters like spaces.
         fullyQualifiedUrl = url.resolve(fullyQualifiedUrl, '');
