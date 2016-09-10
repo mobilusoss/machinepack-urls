@@ -97,6 +97,6 @@ module.exports = {
 
     // Return the fully-qualified URL through the `success` exit.
     return exits.success(fullyQualifiedUrl);
-  },
+  }
 
 };
