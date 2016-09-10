@@ -103,6 +103,7 @@ module.exports = {
         }
 
         // Now resolve the `url` relative to the the `baseUrl` using Node's `url.resolve()`.
+        // (This also escapes characters like spaces, etc.)
         var finalResolvedUrl = url.resolve(resolvedBaseUrl, inputs.url);
 
         // Now, one last time, trim off any trailing slashes.
@@ -122,6 +123,10 @@ module.exports = {
         if (resolvedPrimaryUrl === '') {
           throw new Error('The provided URL (`'+inputs.url+'`) was not a valid, fully-qualified URL.  Make sure it includes the hostname (e.g. "example.com"), or leave this primary URL as a path like "/foo/bar" and include a base URL (e.g. "api.example.com/pets").');
         }
+
+        // Now use Node's `url.resolve()` to escape characters.
+        resolvedPrimaryUrl = url.resolve(resolvedPrimaryUrl, '');
+
         return resolvedPrimaryUrl;
       }
 
@@ -139,9 +144,9 @@ module.exports = {
       handleResolvingUrl: function (origUrl){
 
         // Build our best attempt at a fully-qualified URL.
-        var fullyQualifiedUrl = (function (){
+        var fullyQualifiedUrl = (function _ensureProtocol(){
           // If a protocol is already included in URL, leave it alone.
-          if (origUrl.match(/^(https?:\/\/|ftp:\/\/)/)) {
+          if (origUrl.match(/^([a-z][a-z0-9]+:\/\/)/)) {
             return origUrl;
           }
           // If protocol is invalid, but sort of makes sense ("//"), change it to `http`.
@@ -156,6 +161,9 @@ module.exports = {
 
         // Trim off any trailing slashes.
         fullyQualifiedUrl = fullyQualifiedUrl.replace(/\/*$/, '');
+
+        // Now use Node's `url.resolve()` to escape characters like spaces.
+        fullyQualifiedUrl = url.resolve(fullyQualifiedUrl, '');
 
         // Now check that what we ended up with is actually valid.
         if (!Urls.isUrl({string: fullyQualifiedUrl}).execSync()) {
