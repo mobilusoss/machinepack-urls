@@ -70,6 +70,9 @@ module.exports = {
     // Import the `url` module from Node core.
     var url = require('url');
 
+    // Import the `path` module from Node core.
+    var path = require('path');
+
     // Get a handle to this pack.
     var Urls = require('../');
 
@@ -89,6 +92,30 @@ module.exports = {
         if (resolvedBaseUrl === '') {
           throw new Error('The provided base URL (`'+inputs.baseUrl+'`) was not a valid, fully-qualified URL.  Make sure it includes the hostname (e.g. "example.com").');
         }
+
+        var baseUrlInfo = url.parse(inputs.baseUrl);
+        if (baseUrlInfo.search) {
+          throw new Error('The provided base URL (`'+inputs.baseUrl+'`) contains a query string (`'+baseUrlInfo.search+'`).  But if a base URL is provided, it should _never_ contain a query string.  That is only allowed in the primary URL (`url`).');
+        }
+        if (baseUrlInfo.hash) {
+          throw new Error('The provided base URL (`'+inputs.baseUrl+'`) contains a hash/fragment (`'+baseUrlInfo.hash+'`).  But if a base URL is provided, it should _never_ contain a URL fragment.  That is only allowed in the primary URL (`url`).');
+        }
+
+        // Ensure protocol.
+        if (!baseUrlInfo.protocol) {
+          baseUrlInfo.protocol = 'http:';
+          baseUrlInfo.slashes = true;
+        }
+
+        // Squish together any repeated adjacent slashes that appear in the path
+        // (e.g. "http://foo///bar//z/////d.jpg" => "http://foo/bar/z/d.jpg")
+        baseUrlInfo.pathname = baseUrlInfo.pathname.replace(/\/+/g, '/');
+
+        // Trim trailing slashes in pathname.
+        baseUrlInfo.pathname = baseUrlInfo.pathname.replace(/\/*$/, '');
+
+        var coercedBaseUrl = url.format(baseUrlInfo);
+
         // --• If we're here, then we have a safe, fully-qualified version of the `baseUrl`.
 
         // Now we'll assume that the provided `url` is a valid URL path.
