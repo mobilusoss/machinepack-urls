@@ -20,9 +20,17 @@ module.exports = {
 
     url: {
       friendlyName: 'URL',
+      description: 'The URL to resolve, with or without the protocol prefix (e.g. "http://").',
+      extendedDescription: 'If a `baseUrl` is specified, then this URL should be specified as a URL path (e.g. "/foo").',
       example: 'www.example.com/search',
-      description: 'The URL to sanitize, with or without the protocol prefix (e.g. "http://").',
       required: true
+    },
+
+    baseUrl: {
+      friendlyName: 'Base URL',
+      description: 'Optional base URL to resolve against, with or without the protocol prefix (e.g. "http://").',
+      extendedDescription: 'If specified, this _must_ include the hostname (e.g. `api.example.com`).  It may also include a path (e.g. `http://api.example.com/pets`).',
+      example: 'https://api.example.com/pets'
     }
 
   },
@@ -32,7 +40,7 @@ module.exports = {
 
     success: {
       outputFriendlyName: 'Resolved URL',
-      outputDescription: 'A sanitized, fully-qualified version of the input URL.',
+      outputDescription: 'A sanitized, fully-qualified URL.',
       outputExample: 'http://www.example.com/search'
     }
 
@@ -43,6 +51,25 @@ module.exports = {
 
     // Get a handle to this pack.
     var Urls = require('../');
+
+
+    //  ╦╔═╗  ┌┐ ┌─┐┌─┐┌─┐  ┬ ┬┬─┐┬    ┬ ┬┌─┐┌─┐  ┌─┐┬─┐┌─┐┬  ┬┬┌┬┐┌─┐┌┬┐
+    //  ║╠╣   ├┴┐├─┤└─┐├┤   │ │├┬┘│    │││├─┤└─┐  ├─┘├┬┘│ │└┐┌┘│ ││├┤  ││
+    //  ╩╚    └─┘┴ ┴└─┘└─┘  └─┘┴└─┴─┘  └┴┘┴ ┴└─┘  ┴  ┴└─└─┘ └┘ ┴─┴┘└─┘─┴┘ooo
+    if (inputs.baseUrl !== undefined) {
+      // TODO
+      throw new Error('TODO');
+    }
+
+
+    // --•
+    //  ╔═╗╔╦╗╦ ╦╔═╗╦═╗╦ ╦╦╔═╗╔═╗
+    //  ║ ║ ║ ╠═╣║╣ ╠╦╝║║║║╚═╗║╣
+    //  ╚═╝ ╩ ╩ ╩╚═╝╩╚═╚╩╝╩╚═╝╚═╝ooo
+    //  ┌─    ┌┐┌┌─┐  ┌┐ ┌─┐┌─┐┌─┐  ┬ ┬┬─┐┬    ┬ ┬┌─┐┌─┐  ┌─┐┬─┐┌─┐┬  ┬┬┌┬┐┌─┐┌┬┐    ─┐
+    //  │───  ││││ │  ├┴┐├─┤└─┐├┤   │ │├┬┘│    │││├─┤└─┐  ├─┘├┬┘│ │└┐┌┘│ ││├┤  ││  ───│
+    //  └─    ┘└┘└─┘  └─┘┴ ┴└─┘└─┘  └─┘┴└─┴─┘  └┴┘┴ ┴└─┘  ┴  ┴└─└─┘ └┘ ┴─┴┘└─┘─┴┘    ─┘
+    // Otherwise, no `baseUrl` was provided.
 
     // Build our best attempt at a fully-qualified URL.
     var fullyQualifiedUrl = (function (){
