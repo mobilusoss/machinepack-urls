@@ -20,7 +20,11 @@ module.exports = {
   'Optionally, this machine _also_ allows a base URL (`baseUrl`) to be provided.  This allows a URL path (like `/foo/bar`) to be '+
   'provided as the primary URL, as long as a valid URL with a hostname is provided as the base URL.  To stick with our example from '+
   'above, if `/foo/bar` is passed in as the primary URL (`url`), and a valid base URL-- say, `api.example.com/pets` _is also provided_, '+
-  'then, instead of failing, this machine will return `http://api.example.com/pets/foo/bar`.'+
+  'then, instead of failing, this machine will return `http://api.example.com/pets/foo/bar`.\n'+
+  '\n'+
+  '### URL encoding\n'+
+  '> This also ensures that the provided URL strings do not contain invalid characters by escaping spaces as `%20`, etc.\n'+
+  '> See [the Node.js docs](https://nodejs.org/api/url.html#url_escaped_characters) for reference.'+
   '',
 
 
@@ -95,17 +99,17 @@ module.exports = {
         // > URL encodes, etc.)  So our goal is just to catch some of the major stuff that would normally
         // > slip through the cracks and cause `url.resolve()` to fail silently in an unexpected way.
         if (inputs.url.match(/^(https?:\/\/|ftp:\/\/)/)) {
-          throw new Error('The provided primary URL (`'+inputs.url+'`) has an unexpected format.  Because a base URL (`'+inputs.baseUrl+'`) was also specified, the primary URL should be provided as a URL path, like "/foo/bar".');
+          throw new Error('The provided primary URL (`'+inputs.url+'`) has an unexpected format.  Because a base URL (`'+inputs.baseUrl+'`) was also specified, the primary URL should be provided as a URL path, like "/foo/bar".  It should not begin with a protocol like "http://".');
         }
 
         // Now resolve the `url` relative to the the `baseUrl` using Node's `url.resolve()`.
         var finalResolvedUrl = url.resolve(resolvedBaseUrl, inputs.url);
 
         // Now, one last time, trim off any trailing slashes.
-        finalResolvedUrl = finalResolvedUrl.replace(/\/*$/, '');
+        finalResolvedUrl = fullyQualifiedUrl.replace(/\/*$/, '');
 
         // And that's it!
-        return resolvedBaseUrl;
+        return finalResolvedUrl;
       }// ‡
       //  ╔═╗╔╦╗╦ ╦╔═╗╦═╗╦ ╦╦╔═╗╔═╗
       //  ║ ║ ║ ╠═╣║╣ ╠╦╝║║║║╚═╗║╣
