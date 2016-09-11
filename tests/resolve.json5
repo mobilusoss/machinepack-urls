@@ -57,15 +57,15 @@
       "returns": "https://google.com/baby-bunnies/cam"
     },
 
-    // // With valid baseUrl and `url` provided as a naked path with a querystring
-    // {
-    //   "using": {
-    //     "baseUrl": "https://google.com/baby-bunnies",
-    //     "url": "/cam?playhead=3:42"
-    //   },
-    //   "outcome": "success",
-    //   "returns": "https://google.com/baby-bunnies/cam"
-    // },
+    // With valid baseUrl and `url` provided as a naked path with a querystring
+    {
+      "using": {
+        "baseUrl": "https://google.com/baby-bunnies",
+        "url": "/cam?playhead=3:42"
+      },
+      "outcome": "success",
+      "returns": "https://google.com/baby-bunnies/cam?playhead=3:42"
+    },
 
   ]
 }
