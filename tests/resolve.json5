@@ -47,7 +47,7 @@
     // WITH BASE URL TOO
     // ========================================================================
 
-    // With valid baseUrl and `url` provided as a naked path
+    // With valid baseUrl and `url` provided as a naked path (should work)
     {
       "using": {
         "baseUrl": "https://google.com/baby-bunnies",
@@ -58,6 +58,7 @@
     },
 
     // With valid baseUrl and `url` provided as a naked path with a querystring
+    // (should work, and also not double-encode everything)
     {
       "using": {
         "baseUrl": "https://google.com/baby-bunnies",
@@ -65,7 +66,7 @@
       },
       "outcome": "success",
       "returns": "https://google.com/baby-bunnies/cam?playhead=3:42"
-    },
+    }
 
   ]
 }
