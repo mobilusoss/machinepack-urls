@@ -84,64 +84,68 @@ module.exports = {
     // > the base URL.
     var fullyQualifiedUrl = (function _resolveEitherUrlOrBaseUrl(opts){
 
+      var coercedUrl;
+
       //  ╦╔═╗  ┌┐ ┌─┐┌─┐┌─┐  ┬ ┬┬─┐┬    ┬ ┬┌─┐┌─┐  ┌─┐┬─┐┌─┐┬  ┬┬┌┬┐┌─┐┌┬┐
       //  ║╠╣   ├┴┐├─┤└─┐├┤   │ │├┬┘│    │││├─┤└─┐  ├─┘├┬┘│ │└┐┌┘│ ││├┤  ││
       //  ╩╚    └─┘┴ ┴└─┘└─┘  └─┘┴└─┴─┘  └┴┘┴ ┴└─┘  ┴  ┴└─└─┘ └┘ ┴─┴┘└─┘─┴┘ooo
       if (inputs.baseUrl !== undefined) {
-        var resolvedBaseUrl = opts.handleResolvingUrl(inputs.baseUrl);
-        if (resolvedBaseUrl === '') {
-          throw new Error('The provided base URL (`'+inputs.baseUrl+'`) was not a valid, fully-qualified URL.  Make sure it includes the hostname (e.g. "example.com").');
+
+        coercedUrl = inputs.baseUrl;
+
+        // Before proceeding, if base URL begins with two slashes (//), then change it to `http://`.
+        if (inputs.baseUrl.match(/^(\/\/)/)){
+          coercedUrl = inputs.baseUrl.replace(/^\/\//, 'http://');
         }
 
-        var baseUrlInfo = url.parse(inputs.baseUrl);
+        var baseUrlInfo = url.parse(coercedUrl);
+
         if (baseUrlInfo.search) {
-          throw new Error('The provided base URL (`'+inputs.baseUrl+'`) contains a query string (`'+baseUrlInfo.search+'`).  But if a base URL is provided, it should _never_ contain a query string.  That is only allowed in the primary URL (`url`).');
+          throw new Error('The provided base URL (`'+inputs.baseUrl+'`) contains a query string (`'+baseUrlInfo.search+'`).  But it should _never_ contain a query string.  That is only allowed in the primary URL (`url`).');
         }
         if (baseUrlInfo.hash) {
-          throw new Error('The provided base URL (`'+inputs.baseUrl+'`) contains a hash/fragment (`'+baseUrlInfo.hash+'`).  But if a base URL is provided, it should _never_ contain a URL fragment.  That is only allowed in the primary URL (`url`).');
+          throw new Error('The provided base URL (`'+inputs.baseUrl+'`) contains a hash/fragment (`'+baseUrlInfo.hash+'`).  But it should _never_ contain a URL fragment.  That is only allowed in the primary URL (`url`).');
         }
 
-        // Ensure protocol.
+        // Ensure protocol
+        // (set it to `http` if there isn't one)
         if (!baseUrlInfo.protocol) {
           baseUrlInfo.protocol = 'http:';
-          baseUrlInfo.slashes = true;
+        }
+
+        // Always make sure `slashes` is set to `true`.
+        baseUrlInfo.slashes = true;
+
+        // Ensure hostname.
+        if (!baseUrlInfo.hostname) {
+          throw new Error('The provided base URL (`'+inputs.baseUrl+'`) was not a valid, fully-qualified URL.  Make sure it includes the hostname (e.g. "example.com").');
         }
 
         // Squish together any repeated adjacent slashes that appear in the path
         // (e.g. "http://foo///bar//z/////d.jpg" => "http://foo/bar/z/d.jpg")
         baseUrlInfo.pathname = baseUrlInfo.pathname.replace(/\/+/g, '/');
 
-        // Trim trailing slashes in pathname.
+        // Trim trailing slashes in path.
         baseUrlInfo.pathname = baseUrlInfo.pathname.replace(/\/*$/, '');
 
-        var coercedBaseUrl = url.format(baseUrlInfo);
-
-        // --• If we're here, then we have a safe, fully-qualified version of the `baseUrl`.
-
-        // Now we'll assume that the provided `url` is a valid URL path.
-        // But verify that first, just to be safe.
-        //
-        // > Note that we're not particularly draconian here.  That's because we're using Node's built-in
-        // > `url` module below, and it's pretty tolerant (it trims whitespace and adds leading slashes,
-        // > URL encodes, etc.)  So our goal is just to catch some of the major stuff that would normally
-        // > slip through the cracks and cause `url.resolve()` to fail silently in an unexpected way.
-        if (inputs.url.match(/^(https?:\/\/|ftp:\/\/)/)) {
-          throw new Error('The provided primary URL (`'+inputs.url+'`) has an unexpected format.  Because a base URL (`'+inputs.baseUrl+'`) was also specified, the primary URL should be provided as a URL path, like "/foo/bar".  It should not begin with a protocol like "http://".');
+        // Now we need to check that the provided target URL (`url`) is a valid URL path.
+        var targetUrlInfo = url.parse(inputs.url);
+        if (targetUrlInfo.protocol || targetUrlInfo.slashes) {
+          throw new Error('The provided target URL (`'+inputs.url+'`) has an unexpected format.  Because a base URL (`'+inputs.baseUrl+'`) was also specified, the target URL should be provided as a URL path, like "/foo/bar".  It should not begin with a protocol like "http://".');
         }
 
-        // Now resolve the `url` relative to the the `baseUrl` using Node's `url.resolve()`.
-        // (This also escapes characters like spaces, etc.)
-        //
-        // > But before doing so, note that we remove any leading slashes
-        // > (this is because `url.resolve()` acts like href resolution in the browser- and we don't want that.)
-        var primaryUrlWithoutLeadingSlashes = inputs.url.replace(/^\/+/,'');
-        var finalResolvedUrl = url.resolve(resolvedBaseUrl, primaryUrlWithoutLeadingSlashes);
+        // And assuming it looks good, join it with the existing pathname.
+        baseUrlInfo.pathname = path.join(baseUrlInfo.pathname, inputs.url);
 
-        // Now, one last time, trim off any trailing slashes.
-        finalResolvedUrl = finalResolvedUrl.replace(/\/*$/, '');
+        // Now, one last time, trim trailing slashes in path.
+        baseUrlInfo.pathname = baseUrlInfo.pathname.replace(/\/*$/, '');
+
+        // Now coallesce all the pieces.
+        coercedUrl = url.format(baseUrlInfo);
 
         // And that's it!
-        return finalResolvedUrl;
+        return coercedUrl;
+
       }// ‡
       //  ╔═╗╔╦╗╦ ╦╔═╗╦═╗╦ ╦╦╔═╗╔═╗
       //  ║ ║ ║ ╠═╣║╣ ╠╦╝║║║║╚═╗║╣
@@ -150,15 +154,33 @@ module.exports = {
       //  │───  ││││ │  ├┴┐├─┤└─┐├┤   │ │├┬┘│    │││├─┤└─┐  ├─┘├┬┘│ │└┐┌┘│ ││├┤  ││  ───│
       //  └─    ┘└┘└─┘  └─┘┴ ┴└─┘└─┘  └─┘┴└─┴─┘  └┴┘┴ ┴└─┘  ┴  ┴└─└─┘ └┘ ┴─┴┘└─┘─┴┘    ─┘
       else {
-        var resolvedPrimaryUrl = opts.handleResolvingUrl(inputs.url);
-        if (resolvedPrimaryUrl === '') {
+
+        var soloUrlInfo = url.parse(inputs.url);
+
+        // Ensure protocol
+        // (set it to `http` if there isn't one)
+        if (!soloUrlInfo.protocol) {
+          soloUrlInfo.protocol = 'http:';
+        }
+
+        // Always make sure `slashes` is set to `true`.
+        soloUrlInfo.slashes = true;
+
+        // Ensure hostname.
+        if (!soloUrlInfo.hostname) {
           throw new Error('The provided URL (`'+inputs.url+'`) was not a valid, fully-qualified URL.  Make sure it includes the hostname (e.g. "example.com"), or leave this primary URL as a path like "/foo/bar" and include a base URL (e.g. "api.example.com/pets").');
         }
 
-        // Now use Node's `url.resolve()` to escape characters.
-        resolvedPrimaryUrl = url.resolve(resolvedPrimaryUrl, '');
+        // Squish together any repeated adjacent slashes that appear in the path
+        // (e.g. "http://foo///bar//z/////d.jpg" => "http://foo/bar/z/d.jpg")
+        soloUrlInfo.pathname = soloUrlInfo.pathname.replace(/\/+/g, '/');
 
-        return resolvedPrimaryUrl;
+        // Trim trailing slashes in path.
+        soloUrlInfo.pathname = soloUrlInfo.pathname.replace(/\/*$/, '');
+
+        var coercedSoloUrl = url.format(soloUrlInfo);
+
+        return coercedSoloUrl;
       }
 
     })({
