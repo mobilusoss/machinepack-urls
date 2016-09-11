@@ -7,7 +7,7 @@ module.exports = {
   description: 'Build a sanitized, fully-qualified version of the provided URL.',
 
 
-  extendedDescription: 'Given a URL or URL segment, returns a fully-qualified URL with trailing slashes stripped off.  For example, if a valid protocol is provided (e.g. "https://") and the original URL contains no trailing slashes, the URL returned will be identical to what was passed in.  If the provided URL begins with "//", it will be replaced with "http://".  If the provided URL does not start with a usable protocol, "http://" will be prepended.  If the URL cannot be sanitized, the `invalid` exit will be triggered.',
+  extendedDescription: 'Given a URL, returns a fully-qualified URL with trailing slashes stripped off.  For example, if a valid protocol is provided (e.g. "https://") and the original URL contains no trailing slashes, the URL returned will be identical to what was passed in.  If the provided URL begins with "//", it will be replaced with "http://".  If the provided URL does not start with a usable protocol, "http://" will be prepended.  If the URL cannot be sanitized, the `error` exit will be triggered.',
 
 
   sync: true,
@@ -65,7 +65,7 @@ module.exports = {
 
     // Now check that what we ended up with is actually valid.
     if (!Urls.isUrl({string: fullyQualifiedUrl}).execSync()) {
-      return exits.error(new Error('The provided URL was not valid.'));
+      return exits.error(new Error('The provided URL (`'+inputs.url+'`) was not a valid, fully-qualified URL.  Make sure it includes the hostname (e.g. "example.com").'));
     }
 
     // Return the fully-qualified URL through the `success` exit.
