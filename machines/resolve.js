@@ -82,165 +82,123 @@ module.exports = {
     // > If a `baseUrl` WAS provided, once it is resolved (and valid),
     // > treat the primary `url` as a path, and resolve it relative to
     // > the base URL.
-    var fullyQualifiedUrl = (function _resolveEitherUrlOrBaseUrl(opts){
+    var coercedUrl;
 
-      var coercedUrl;
+    //  ╦╔═╗  ┌┐ ┌─┐┌─┐┌─┐  ┬ ┬┬─┐┬    ┬ ┬┌─┐┌─┐  ┌─┐┬─┐┌─┐┬  ┬┬┌┬┐┌─┐┌┬┐
+    //  ║╠╣   ├┴┐├─┤└─┐├┤   │ │├┬┘│    │││├─┤└─┐  ├─┘├┬┘│ │└┐┌┘│ ││├┤  ││
+    //  ╩╚    └─┘┴ ┴└─┘└─┘  └─┘┴└─┴─┘  └┴┘┴ ┴└─┘  ┴  ┴└─└─┘ └┘ ┴─┴┘└─┘─┴┘ooo
+    if (inputs.baseUrl !== undefined) {
+      coercedUrl = inputs.baseUrl;
 
-      //  ╦╔═╗  ┌┐ ┌─┐┌─┐┌─┐  ┬ ┬┬─┐┬    ┬ ┬┌─┐┌─┐  ┌─┐┬─┐┌─┐┬  ┬┬┌┬┐┌─┐┌┬┐
-      //  ║╠╣   ├┴┐├─┤└─┐├┤   │ │├┬┘│    │││├─┤└─┐  ├─┘├┬┘│ │└┐┌┘│ ││├┤  ││
-      //  ╩╚    └─┘┴ ┴└─┘└─┘  └─┘┴└─┴─┘  └┴┘┴ ┴└─┘  ┴  ┴└─└─┘ └┘ ┴─┴┘└─┘─┴┘ooo
-      if (inputs.baseUrl !== undefined) {
-
-        coercedUrl = inputs.baseUrl;
-
-        // Before proceeding, if base URL begins with two slashes (//), then change it to `http://`.
-        if (inputs.baseUrl.match(/^(\/\/)/)){
-          coercedUrl = inputs.baseUrl.replace(/^\/\//, 'http://');
-        }
-
-        var baseUrlInfo = url.parse(coercedUrl);
-
-        if (baseUrlInfo.search) {
-          throw new Error('The provided base URL (`'+inputs.baseUrl+'`) contains a query string (`'+baseUrlInfo.search+'`).  But it should _never_ contain a query string.  That is only allowed in the primary URL (`url`).');
-        }
-        if (baseUrlInfo.hash) {
-          throw new Error('The provided base URL (`'+inputs.baseUrl+'`) contains a hash/fragment (`'+baseUrlInfo.hash+'`).  But it should _never_ contain a URL fragment.  That is only allowed in the primary URL (`url`).');
-        }
-
-        // Ensure protocol
-        // (set it to `http` if there isn't one)
-        if (!baseUrlInfo.protocol) {
-          baseUrlInfo.protocol = 'http:';
-        }
-
-        // Always make sure `slashes` is set to `true`.
-        baseUrlInfo.slashes = true;
-
-        // Ensure hostname.
-        if (!baseUrlInfo.hostname) {
-          throw new Error('The provided base URL (`'+inputs.baseUrl+'`) was not a valid, fully-qualified URL.  Make sure it includes the hostname (e.g. "example.com").');
-        }
-
-        // Squish together any repeated adjacent slashes that appear in the path
-        // (e.g. "http://foo///bar//z/////d.jpg" => "http://foo/bar/z/d.jpg")
-        baseUrlInfo.pathname = baseUrlInfo.pathname.replace(/\/+/g, '/');
-
-        // Trim trailing slashes in path.
-        baseUrlInfo.pathname = baseUrlInfo.pathname.replace(/\/*$/, '');
-
-        // Now we need to check that the provided target URL (`url`) is a valid URL path.
-        var targetUrlInfo = url.parse(inputs.url);
-        if (targetUrlInfo.protocol || targetUrlInfo.slashes) {
-          throw new Error('The provided target URL (`'+inputs.url+'`) has an unexpected format.  Because a base URL (`'+inputs.baseUrl+'`) was also specified, the target URL should be provided as a URL path, like "/foo/bar".  It should not begin with a protocol like "http://".');
-        }
-
-        // And assuming it looks good, join it with the existing pathname.
-        baseUrlInfo.pathname = path.join(baseUrlInfo.pathname, inputs.url);
-
-        // Now, one last time, trim trailing slashes in path.
-        baseUrlInfo.pathname = baseUrlInfo.pathname.replace(/\/*$/, '');
-
-        // Now coallesce all the pieces.
-        coercedUrl = url.format(baseUrlInfo);
-
-        // And that's it!
-        return coercedUrl;
-
-      }// ‡
-      //  ╔═╗╔╦╗╦ ╦╔═╗╦═╗╦ ╦╦╔═╗╔═╗
-      //  ║ ║ ║ ╠═╣║╣ ╠╦╝║║║║╚═╗║╣
-      //  ╚═╝ ╩ ╩ ╩╚═╝╩╚═╚╩╝╩╚═╝╚═╝ooo
-      //  ┌─    ┌┐┌┌─┐  ┌┐ ┌─┐┌─┐┌─┐  ┬ ┬┬─┐┬    ┬ ┬┌─┐┌─┐  ┌─┐┬─┐┌─┐┬  ┬┬┌┬┐┌─┐┌┬┐    ─┐
-      //  │───  ││││ │  ├┴┐├─┤└─┐├┤   │ │├┬┘│    │││├─┤└─┐  ├─┘├┬┘│ │└┐┌┘│ ││├┤  ││  ───│
-      //  └─    ┘└┘└─┘  └─┘┴ ┴└─┘└─┘  └─┘┴└─┴─┘  └┴┘┴ ┴└─┘  ┴  ┴└─└─┘ └┘ ┴─┴┘└─┘─┴┘    ─┘
-      else {
-
-        var soloUrlInfo = url.parse(inputs.url);
-
-        // Ensure protocol
-        // (set it to `http` if there isn't one)
-        if (!soloUrlInfo.protocol) {
-          soloUrlInfo.protocol = 'http:';
-        }
-
-        // Always make sure `slashes` is set to `true`.
-        soloUrlInfo.slashes = true;
-
-        // Ensure hostname.
-        if (!soloUrlInfo.hostname) {
-          throw new Error('The provided URL (`'+inputs.url+'`) was not a valid, fully-qualified URL.  Make sure it includes the hostname (e.g. "example.com"), or leave this primary URL as a path like "/foo/bar" and include a base URL (e.g. "api.example.com/pets").');
-        }
-
-        // Squish together any repeated adjacent slashes that appear in the path
-        // (e.g. "http://foo///bar//z/////d.jpg" => "http://foo/bar/z/d.jpg")
-        soloUrlInfo.pathname = soloUrlInfo.pathname.replace(/\/+/g, '/');
-
-        // Trim trailing slashes in path.
-        soloUrlInfo.pathname = soloUrlInfo.pathname.replace(/\/*$/, '');
-
-        var coercedSoloUrl = url.format(soloUrlInfo);
-
-        return coercedSoloUrl;
+      // Before proceeding, take care of a few things that aren't handled the same way by `url.parse()`:
+      // • if base URL begins with two slashes (//), then change it to `http://`.
+      if (coercedUrl.match(/^(\/\/)/)){
+        coercedUrl = coercedUrl.replace(/^\/\//, 'http://');
+      }
+      // • if base URL DOES NOT begin with a protocol-looking thing, then prefix it with `http://`
+      else if (!coercedUrl.match(/^([a-z][a-z0-9]+:\/\/)/)) {
+        coercedUrl =  'http://' + coercedUrl;
       }
 
-    })({
+      var baseUrlInfo = url.parse(coercedUrl);
 
-      /**
-       * handleResolvingUrl()
-       *
-       * @param  {String} origUrl
-       *
-       * @returns {String}
-       *         The fully-qualified version of the provided `origUrl`.
-       *         (Or empty string, if it fails.)
-       */
-      handleResolvingUrl: function (origUrl){
+      if (baseUrlInfo.search) {
+        throw new Error('The provided base URL (`'+inputs.baseUrl+'`) contains a query string (`'+baseUrlInfo.search+'`).  But it should _never_ contain a query string.  That is only allowed in the primary URL (`url`).');
+      }
+      if (baseUrlInfo.hash) {
+        throw new Error('The provided base URL (`'+inputs.baseUrl+'`) contains a hash/fragment (`'+baseUrlInfo.hash+'`).  But it should _never_ contain a URL fragment.  That is only allowed in the primary URL (`url`).');
+      }
 
-        // Build our best attempt at a fully-qualified URL.
-        var fullyQualifiedUrl = (function _ensureProtocol(){
-          // If a protocol is already included in URL, leave it alone.
-          if (origUrl.match(/^([a-z][a-z0-9]+:\/\/)/)) {
-            return origUrl;
-          }
-          // If protocol is invalid, but sort of makes sense ("//"), change it to `http`.
-          else if (origUrl.match(/^(\/\/)/)){
-            return origUrl.replace(/^\/\//, 'http://');
-          }
-          // Otherwise default to "http://" and prefix the provided URL w/ that.
-          else {
-            return 'http://'+origUrl;
-          }
-        })();
+      // Ensure protocol
+      // (set it to `http` if there isn't one)
+      if (!baseUrlInfo.protocol) {
+        baseUrlInfo.protocol = 'http:';
+      }
 
-        // Trim off any trailing slashes.
-        fullyQualifiedUrl = fullyQualifiedUrl.replace(/\/*$/, '');
+      // Always make sure `slashes` is set to `true`.
+      baseUrlInfo.slashes = true;
 
-        // Squish together any repeated adjacent slashes that appear after the protocol
-        // (e.g. "http://foo///bar//z/////d.jpg" => "http://foo/bar/z/d.jpg")
-        var pieces = fullyQualifiedUrl.split(/^([a-z][a-z0-9]+:\/\/)/);
-        console.log(fullyQualifiedUrl, pieces);
-        if (pieces.length < 3) { throw new Error('Consistency violation: Internal error in mp-urls (should always be able to split fully qualified URL on its protocol!  But could not properly split: `'+fullyQualifiedUrl+'`)'); }
-        var justTheProtocol = pieces[1];
-        var everythingButProtocol = pieces.slice(2).join('');
-        fullyQualifiedUrl = justTheProtocol + everythingButProtocol.replace(/\/+/g, '/');
-        console.log('after:',fullyQualifiedUrl);
+      // Verify hostname.
+      if (!baseUrlInfo.hostname) {
+        throw new Error('The provided base URL (`'+inputs.baseUrl+'`) was not a valid, fully-qualified URL.  Make sure it includes the hostname (e.g. "example.com").');
+      }
 
-        // Now use Node's `url.resolve()` to escape characters like spaces.
-        fullyQualifiedUrl = url.resolve(fullyQualifiedUrl, '');
+      // Squish together any repeated adjacent slashes that appear in the path
+      // (e.g. "http://foo///bar//z/////d.jpg" => "http://foo/bar/z/d.jpg")
+      baseUrlInfo.pathname = baseUrlInfo.pathname.replace(/\/+/g, '/');
 
-        // Now check that what we ended up with is actually valid.
-        if (!Urls.isUrl({string: fullyQualifiedUrl}).execSync()) {
-          return '';
-        }
+      // Trim trailing slashes in path.
+      baseUrlInfo.pathname = baseUrlInfo.pathname.replace(/\/*$/, '');
 
-        return fullyQualifiedUrl;
-      }//</lamda definition :: handleResolvingUrl>
-    });//</self-calling function>
+      // Now we need to check that the provided target URL (`url`) is a valid URL path.
+      var targetUrlInfo = url.parse(inputs.url);
+      if (targetUrlInfo.protocol || targetUrlInfo.slashes) {
+        throw new Error('The provided target URL (`'+inputs.url+'`) has an unexpected format.  Because a base URL (`'+inputs.baseUrl+'`) was also specified, the target URL should be provided as a URL path, like "/foo/bar".  It should not begin with a protocol like "http://".');
+      }
+
+      // And assuming it looks good, join it with the existing pathname.
+      baseUrlInfo.pathname = path.join(baseUrlInfo.pathname, inputs.url);
+
+      // Now, one last time, trim trailing slashes in path.
+      baseUrlInfo.pathname = baseUrlInfo.pathname.replace(/\/*$/, '');
+
+      // Now coallesce all the pieces.
+      coercedUrl = url.format(baseUrlInfo);
+
+    }// ‡
+    //  ╔═╗╔╦╗╦ ╦╔═╗╦═╗╦ ╦╦╔═╗╔═╗
+    //  ║ ║ ║ ╠═╣║╣ ╠╦╝║║║║╚═╗║╣
+    //  ╚═╝ ╩ ╩ ╩╚═╝╩╚═╚╩╝╩╚═╝╚═╝ooo
+    //  ┌─    ┌┐┌┌─┐  ┌┐ ┌─┐┌─┐┌─┐  ┬ ┬┬─┐┬    ┬ ┬┌─┐┌─┐  ┌─┐┬─┐┌─┐┬  ┬┬┌┬┐┌─┐┌┬┐    ─┐
+    //  │───  ││││ │  ├┴┐├─┤└─┐├┤   │ │├┬┘│    │││├─┤└─┐  ├─┘├┬┘│ │└┐┌┘│ ││├┤  ││  ───│
+    //  └─    ┘└┘└─┘  └─┘┴ ┴└─┘└─┘  └─┘┴└─┴─┘  └┴┘┴ ┴└─┘  ┴  ┴└─└─┘ └┘ ┴─┴┘└─┘─┴┘    ─┘
+    else {
+
+      coercedUrl = inputs.url;
+
+      // Before proceeding, take care of a few things that aren't handled the same way by `url.parse()`:
+      // • if URL begins with two slashes (//), then change it to `http://`.
+      if (coercedUrl.match(/^(\/\/)/)){
+        coercedUrl = coercedUrl.replace(/^\/\//, 'http://');
+      }
+      // • if URL DOES NOT begin with a protocol-looking thing, then prefix it with `http://`
+      else if (!coercedUrl.match(/^([a-z][a-z0-9]+:\/\/)/)) {
+        coercedUrl =  'http://' + coercedUrl;
+      }
+
+      var soloUrlInfo = url.parse(coercedUrl);
+
+      // Ensure protocol
+      // (set it to `http` if there isn't one)
+      if (!soloUrlInfo.protocol) {
+        soloUrlInfo.protocol = 'http:';
+      }
+
+      // Always make sure `slashes` is set to `true`.
+      soloUrlInfo.slashes = true;
+
+      // Verify hostname.
+      if (!soloUrlInfo.hostname) {
+        throw new Error('The provided URL (`'+inputs.url+'`) was not a valid, fully-qualified URL.  Make sure it includes the hostname (e.g. "example.com"), or to leave this primary URL as a path (like "/foo/bar"), you can also provide a separate base URL (e.g. "api.example.com/pets").');
+      }
+
+      // Squish together any repeated adjacent slashes that appear in the path
+      // (e.g. "http://foo///bar//z/////d.jpg" => "http://foo/bar/z/d.jpg")
+      soloUrlInfo.pathname = soloUrlInfo.pathname.replace(/\/+/g, '/');
+
+      // Trim trailing slashes in path.
+      soloUrlInfo.pathname = soloUrlInfo.pathname.replace(/\/*$/, '');
+
+      // Now coallesce all the pieces.
+      coercedUrl = url.format(soloUrlInfo);
+
+    }//</else :: base URL was not provided>
+
 
     // --•
     // Now, if we made it here, return the fully-qualified URL through
     // the `success` exit.
-    return exits.success(fullyQualifiedUrl);
+    return exits.success(coercedUrl);
   }
 
 
