@@ -43,7 +43,7 @@ module.exports = {
     var re_weburl = new RegExp(
       "^" +
       // protocol identifier
-      "(?:(?:https?|ftp)://)" +
+      "(?:(?:[a-z][a-z0-9]+)://)" +
       // user:pass authentication
       "(?:\\S+(?::\\S*)?@)?" +
       "(?:" +
