@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "lodash": "^3.9.2",
-    "machine": "^12.3.0"
+    "machine": "^13.0.0-11"
   },
   "repository": {
     "type": "git",
