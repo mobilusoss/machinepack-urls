@@ -135,14 +135,25 @@ module.exports = {
       if (targetUrlInfo.protocol || targetUrlInfo.slashes) {
         throw new Error('The provided target URL (`'+inputs.url+'`) has an unexpected format.  Because a base URL (`'+inputs.baseUrl+'`) was also specified, the target URL should be provided as a URL path, like "/foo/bar".  It should not begin with a protocol like "http://".');
       }
+      // --•  Assuming it looks good...
 
-      // And assuming it looks good, join it with the existing pathname.
-      baseUrlInfo.pathname = path.join(baseUrlInfo.pathname, inputs.url);
+      // Join its path with the existing pathname.
+      //
+      // > Note that we're careful to grab _just the pathname_.
+      // > That's because there might be a querystring or fragment,
+      // > and we don't want to inadvertently double-encode it.
+      baseUrlInfo.pathname = path.join(baseUrlInfo.pathname, targetUrlInfo.pathname);
 
-      // Now, one last time, trim trailing slashes in path.
+      // And, one last time, trim trailing slashes in path.
       baseUrlInfo.pathname = baseUrlInfo.pathname.replace(/\/*$/, '');
 
-      // Now coallesce all the pieces.
+
+      // Next, copy over the querystring and fragment, if they exist.
+      baseUrlInfo.search = targetUrlInfo.search;
+      baseUrlInfo.hash = targetUrlInfo.hash;
+
+
+      // Finally, coallesce all the pieces.
       coercedUrl = url.format(baseUrlInfo);
 
     }// ‡
