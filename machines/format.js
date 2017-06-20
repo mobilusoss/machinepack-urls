@@ -44,7 +44,7 @@ module.exports = {
   fn: function (inputs, exits) {
 
     // Import `lodash`.
-    var _ = require('lodash');
+    var _ = require('@sailshq/lodash');
 
     // Use `replace` with a custom replacer function to substitute actual param values for tokens.
     var result = inputs.urlTemplate.replace(/(\:[^\/\:\.]+)/g, function ($all, $1){

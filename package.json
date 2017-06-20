@@ -3,7 +3,9 @@
   "version": "6.0.1",
   "description": "Machines for working with URL strings.",
   "scripts": {
-    "test": "node ./node_modules/test-machinepack-mocha/bin/testmachinepack-mocha.js"
+    "test": "npm run lint && npm run custom-tests",
+    "custom-tests": "node ./node_modules/mocha/bin/mocha -R spec && node ./node_modules/test-machinepack-mocha/bin/testmachinepack-mocha.js",
+    "lint": "node ./node_modules/eslint/bin/eslint . --max-warnings=0 && echo '✔  Your code looks good.'"
   },
   "keywords": [
     "url-strings",
@@ -14,8 +16,8 @@
   "author": "Mike McNeil",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^3.9.2",
-    "machine": "^13.0.0-11"
+    "@sailshq/lodash": "^3.10.2",
+    "machine": "^15.0.0-0"
   },
   "repository": {
     "type": "git",
@@ -34,6 +36,8 @@
     "testsUrl": "https://travis-ci.org/mikermcneil/machinepack-urls"
   },
   "devDependencies": {
-    "test-machinepack-mocha": "^2.1.1"
+    "test-machinepack-mocha": "^2.1.1",
+    "eslint": "3.5.0",
+    "mocha": "3.0.2"
   }
 }
