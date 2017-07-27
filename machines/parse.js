@@ -47,10 +47,10 @@ module.exports = {
   fn: function(inputs, exits) {
 
     // Import `url`.
-    var Url = require('url');
+    var URL = require('url');
 
     // Use the `parse` function of the `url` package to get information about the given URL.
-    var parsedUrl = Url.parse(inputs.url);
+    var parsedUrl = URL.parse(inputs.url);
 
     // Attempt to infer port if it doesn't exist.
     if (!parsedUrl.port) {
