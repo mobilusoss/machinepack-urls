@@ -40,7 +40,7 @@ module.exports = {
 
   fn: function(inputs, exits) {
     // From https://gist.github.com/dperini/729294
-    var re_weburl = new RegExp(
+    var RX_IS_WEB_URL = new RegExp(
       "^" +
       // protocol identifier
       "(?:(?:[a-z][a-z0-9]+)://)" +
@@ -77,7 +77,7 @@ module.exports = {
 
     // If the input string can pass through the regex above, it's a valid URL,
     // so we can return `true` through our `success` exit.
-    if (re_weburl.test(inputs.string)) {
+    if (RX_IS_WEB_URL.test(inputs.string)) {
       return exits.success(true);
     }
 

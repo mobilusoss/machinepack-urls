@@ -73,9 +73,6 @@ module.exports = {
     // Import the `path` module from Node core.
     var path = require('path');
 
-    // Get a handle to this pack.
-    var Urls = require('../');
-
 
     // Resolve either the `url` or the `baseUrl` (if one was provided.)
     //
