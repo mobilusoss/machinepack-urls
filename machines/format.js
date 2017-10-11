@@ -3,7 +3,7 @@ module.exports = {
   friendlyName: 'Format URL',
 
 
-  description: 'Build a URL from a template string and a set of route parameters.',
+  description: 'Build a URL from a template and a set of dynamic data.',
 
 
   extendedDescription: 'URL template is in the standard format used by Sails.js / Express / Backbone / Vue.js / etc.',
@@ -19,14 +19,14 @@ module.exports = {
 
     urlTemplate: {
       friendlyName: 'URL template',
-      description: 'The URL template, consisting of zero or more colon-prefixed tokens ("pattern variables").',
+      description: 'The URL template, consisting of zero or more colon-prefixed tokens (also known as "pattern variables", "route parameters", or "URL path parameters").',
       extendedDescription: 'This template can be a path like `/foo/bar`, or a canonical URL such as `https://example.com/foo/bar`.  But the provided URL template should never contain the querystring (`?foo=bar&baz`) or fragment (`#foo`) parts.',
       example: '/api/v1/user/:id/friends/:friendId',
       required: true
     },
 
     data: {
-      description: 'An object of key/value pairs to use as url path parameter values.',
+      description: 'A dictionary of key/value pairs to use as values for URL path parameters.',
       example: {},
       required: true
     }
