@@ -16,8 +16,8 @@
   "author": "Mike McNeil",
   "license": "MIT",
   "dependencies": {
-    "@sailshq/lodash": "^3.10.2",
-    "machine": "^15.0.0-2"
+    "lodash": "^4.17.15",
+    "machine": "^15.2.2"
   },
   "repository": {
     "type": "git",
@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "eslint": "3.19.0",
-    "mocha": "3.0.2",
+    "mocha": "^6.2.2",
     "test-machinepack-mocha": "^3.0.0"
   }
 }

@@ -48,6 +48,7 @@ module.exports = {
 
     // Import `url`.
     var URL = require('url');
+    var _ = require('lodash');
 
     // Use the `parse` function of the `url` package to get information about the given URL.
     var parsedUrl = URL.parse(inputs.url);
@@ -62,8 +63,17 @@ module.exports = {
       }
     }
 
+    const cleanObject = JSON.parse(JSON.stringify(parsedUrl));
+    _.keys(cleanObject).forEach(function(key) {
+      cleanObject[key] = cleanObject[key] || '';
+    });
+    delete cleanObject.slashes;
+    delete cleanObject.host;
+    delete cleanObject.query;
+    delete cleanObject.href;
+
     // Return the parsed URL info through the `success` exit.
-    return exits.success(parsedUrl);
+    return exits.success(cleanObject);
   },
 
 };
